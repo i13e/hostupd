@@ -1,0 +1,18 @@
+#!/bin/sh
+# This script updates your hosts file to its newest release along
+# with your own custom blacklist, saved and controlled locally.
+# 
+# Recommended hosts file here: https://github.com/StevenBlack/hosts
+# or from anywhere you'd like
+
+sudo wget -qO /etc/hosts http://raw.githubusercontent.com/StevenBlack/hosts/master/alternates/fakenews-gambling-porn-social/hosts
+sudo chmod 644 /etc/hosts
+while true; do
+    printf '%b ' "\033[1m":: Do you wish to use a custom blacklist? [Y/n]"\033[0m"
+    read -r yn
+    case $yn in
+        [Yy]* ) sudo tee -a /etc/hosts < ~/.local/share/blacklist > /dev/null; exit;;
+        [Nn]* ) exit;;
+        * ) echo "Please answer yes or no.";;
+    esac
+done
