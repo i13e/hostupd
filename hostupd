@@ -5,7 +5,7 @@
 # Recommended hosts file here: https://github.com/StevenBlack/hosts
 
 hosts_url="http://raw.githubusercontent.com/StevenBlack/hosts/master/hosts"
-custom_hosts="${XDG_DATA_HOME:-$HOME/.config}/hosts"
+custom_hosts="${XDG_CONFIG_HOME:-$HOME/.config}/hosts"
 system_hosts="/etc/hosts"
 
 # Update system hosts file
