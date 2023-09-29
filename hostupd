@@ -1,18 +1,30 @@
 #!/bin/sh
-# This script updates your hosts file to its newest release along
+# This script updates your hosts file to its latest release along
 # with your own custom hosts file, saved and controlled locally.
-# 
+#
 # Recommended hosts file here: https://github.com/StevenBlack/hosts
-# or from anywhere you'd like.
 
-sudo wget -qO /etc/hosts http://raw.githubusercontent.com/StevenBlack/hosts/master/hosts
-sudo chmod 644 /etc/hosts
+hosts_url="http://raw.githubusercontent.com/StevenBlack/hosts/master/hosts"
+custom_hosts_file="$XDG_CONFIG_HOME/hosts"
+system_hosts_file="/etc/hosts"
+
+# Update system hosts file
+sudo wget -qO "$system_hosts_file" "$hosts_url" && sudo chmod 644 "$system_hosts_file"
+
+# Ask the user if they want to use a custom hosts file
 while true; do
     printf '%b ' "\033[1m":: Do you wish to use a custom hosts file? [Y/n]"\033[0m"
     read -r yn
     case $yn in
-        [Yy]* ) sudo tee -a /etc/hosts < "$XDG_CONFIG_HOME/hosts" > /dev/null; exit;;
-        [Nn]* ) exit;;
-        * ) echo "Please answer y or n.";;
+    [Yy]*)
+        if [ -f "$custom_hosts_file" ]; then
+            sudo tee -a "$system_hosts_file" < "$custom_hosts_file" >/dev/null
+        else
+            echo "Custom hosts file not found. Skipping..."
+        fi
+        break
+        ;;
+    [Nn]*) break ;;
+    *) echo "Please answer y or n." ;;
     esac
 done
