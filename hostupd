@@ -5,26 +5,11 @@
 # Recommended hosts file here: https://github.com/StevenBlack/hosts
 
 hosts_url="http://raw.githubusercontent.com/StevenBlack/hosts/master/hosts"
-custom_hosts_file="$XDG_CONFIG_HOME/hosts"
-system_hosts_file="/etc/hosts"
+custom_hosts="${XDG_DATA_HOME:-$HOME/.config}/hosts"
+system_hosts="/etc/hosts"
 
 # Update system hosts file
-sudo wget -qO "$system_hosts_file" "$hosts_url" && sudo chmod 644 "$system_hosts_file"
+sudo wget -qO "$system_hosts" "$hosts_url" && sudo chmod 644 "$system_hosts"
 
-# Ask the user if they want to use a custom hosts file
-while true; do
-    printf '%b ' "\033[1m":: Do you wish to use a custom hosts file? [Y/n]"\033[0m"
-    read -r yn
-    case $yn in
-    [Yy]*)
-        if [ -f "$custom_hosts_file" ]; then
-            sudo tee -a "$system_hosts_file" < "$custom_hosts_file" >/dev/null
-        else
-            echo "Custom hosts file not found. Skipping..."
-        fi
-        break
-        ;;
-    [Nn]*) break ;;
-    *) echo "Please answer y or n." ;;
-    esac
-done
+# Add custom hosts file to system hosts file
+[ -f "$custom_hosts" ] && sudo tee -a "$system_hosts" <"$custom_hosts" >/dev/null
