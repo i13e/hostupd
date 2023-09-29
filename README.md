@@ -1,5 +1,7 @@
 # hostupd - Hosts File Updater Script
 
+![GitHub license](https://img.shields.io/badge/license-GPLv3-blue.svg)
+
 The `hostupd` script is a simple shell script designed to help you keep your
 system's hosts file up-to-date with the latest release from [StevenBlack's hosts
 project](https://github.com/StevenBlack/hosts). Additionally, it allows you to
@@ -27,7 +29,7 @@ Before using this script, please ensure you have the following prerequisites:
 1. Clone this repository or download the `hostupd` script:
 
    ```bash
-   git clone https://github.com/yourusername/hostupd.git
+   git clone https://github.com/i13e/hostupd.git
    ```
 
 2. Run the script:
