@@ -2,7 +2,7 @@
 
 ![GitHub license](https://img.shields.io/badge/license-GPLv3-blue.svg)
 
-The `hostupd` script is a simple shell script designed to help you keep your
+`hostupd` is a simple shell script designed to help you keep your
 system's hosts file up-to-date with the latest release from [StevenBlack's hosts
 project](https://github.com/StevenBlack/hosts). Additionally, it allows you to
 append your own custom hosts to the system's hosts file, giving you control over
