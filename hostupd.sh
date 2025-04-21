@@ -1,10 +1,21 @@
 #!/bin/sh
 set -euo pipefail
 
-# Defaults
-hosts_url="http://raw.githubusercontent.com/StevenBlack/hosts/master/hosts"
-custom_hosts="${XDG_CONFIG_HOME:-$HOME/.config}/hosts"
-system_hosts="/etc/hosts"
+log() {
+  level="$1"
+  shift
+  case "$level" in
+  INFO) printf "\033[1;32m[INFO]\033[0m %s\n" "$*" ;;
+  WARN) printf "\033[1;33m[WARN]\033[0m %s\n" "$*" ;;
+  ERROR) printf "\033[1;31m[ERROR]\033[0m %s\n" "$*" >&2 ;;
+  *) printf "[%s] %s\n" "$level" "$*" ;;
+  esac
+}
+
+# Defaults (can be overridden by env)
+hosts_url="${HOSTS_URL:-http://raw.githubusercontent.com/StevenBlack/hosts/master/hosts}"
+custom_hosts="${CUSTOM_HOSTS:-${XDG_CONFIG_HOME:-$HOME/.config}/hosts}"
+system_hosts="${SYSTEM_HOSTS:-/etc/hosts}"
 dry_run=false
 
 print_help() {
@@ -23,19 +34,12 @@ EOF
 # Parse args
 while [ $# -gt 0 ]; do
   case "$1" in
-    -u|--url)
-      hosts_url="$2"; shift 2;;
-    -c|--custom)
-      custom_hosts="$2"; shift 2;;
-    -o|--output)
-      system_hosts="$2"; shift 2;;
-    -d|--dry-run)
-      dry_run=true; shift;;
-    -h|--help)
-      print_help; exit 0;;
-    *)
-      echo "Unknown option: $1" >&2
-      print_help; exit 1;;
+  -u | --url) hosts_url="$2" && shift 2 ;;
+  -c | --custom) custom_hosts="$2" && shift 2 ;;
+  -o | --output) system_hosts="$2" && shift 2 ;;
+  -d | --dry-run) dry_run=true && shift ;;
+  -h | --help) print_help && exit 0 ;;
+  *) log ERROR "Unknown option: $1" && print_help && exit 1 ;;
   esac
 done
 
@@ -46,27 +50,26 @@ fetch() {
   elif command -v wget >/dev/null 2>&1; then
     wget -qO "$2" "$1"
   else
-    echo "Error: neither curl nor wget is available." >&2
+    log ERROR "Neither curl nor wget is available."
     exit 1
   fi
 }
 
+log INFO "Base hosts URL: $hosts_url"
+log INFO "Custom hosts file: $custom_hosts"
+log INFO "Output will go to: $system_hosts"
+$dry_run && log INFO "Dry run mode enabled. No changes will be made."
+
 tmpfile="$(mktemp)"
-
-echo "[INFO] Downloading base hosts from: $hosts_url"
-echo "[INFO] Custom hosts file: $custom_hosts"
-echo "[INFO] Target hosts file: $system_hosts"
-$dry_run && echo "[INFO] Dry run mode enabled. No changes will be written."
-
 fetch "$hosts_url" "$tmpfile"
 [ -f "$custom_hosts" ] && cat "$custom_hosts" >>"$tmpfile"
 
 if [ "$dry_run" = false ]; then
   sudo cp "$tmpfile" "$system_hosts"
   sudo chmod 644 "$system_hosts"
-  echo "[INFO] Hosts file updated successfully."
+  log INFO "Hosts file updated successfully."
 else
-  echo "[DRY RUN] Would copy merged hosts file to $system_hosts"
+  log INFO "Dry run complete. Would copy merged file to $system_hosts"
 fi
 
 rm "$tmpfile"
