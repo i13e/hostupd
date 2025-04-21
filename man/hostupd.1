@@ -1,0 +1,63 @@
+.TH HOSTUPD 1 "April 2025" "1.0" "User Commands"
+
+.SH NAME
+hostupd \- update /etc/hosts from a remote source with optional local additions
+
+.SH SYNOPSIS
+.B hostupd
+[\fIOPTIONS\fR]
+
+.SH DESCRIPTION
+\fBhostupd\fR is a shell script that replaces your system's \fI/etc/hosts\fR file with one downloaded from a public source (e.g. StevenBlack's hosts file) and optionally appends a user-defined custom hosts file.
+
+.SH OPTIONS
+.TP
+\fB\-u\fR, \fB\-\-url\fR \fIURL\fR
+Override the default URL used to download the base hosts file.
+
+.TP
+\fB\-c\fR, \fB\-\-custom\fR \fIPATH\fR
+Specify a custom hosts file to append to the downloaded hosts file.
+
+.TP
+\fB\-o\fR, \fB\-\-output\fR \fIPATH\fR
+Set the output path of the final hosts file (default: \fI/etc/hosts\fR).
+
+.TP
+\fB\-d\fR, \fB\-\-dry\-run\fR
+Print the actions that would be taken without making any actual changes.
+
+.TP
+\fB\-h\fR, \fB\-\-help\fR
+Display usage information.
+
+.SH ENVIRONMENT
+.TP
+\fBHOSTS_URL\fR
+URL to fetch the base hosts file from.
+
+.TP
+\fBCUSTOM_HOSTS\fR
+Path to your custom hosts entries file.
+
+.TP
+\fBSYSTEM_HOSTS\fR
+Path to the system hosts file (usually \fI/etc/hosts\fR).
+
+These variables can also be placed in a \fI.env\fR file in the script directory.
+
+.SH EXAMPLES
+.TP
+Run the script with all defaults:
+.B
+hostupd
+
+.TP
+Dry run with a custom file:
+.B
+hostupd --custom ~/.config/hosts --dry-run
+
+.SH SEE ALSO
+.BR hosts (5),
+.BR curl (1),
+.BR wget (1)
